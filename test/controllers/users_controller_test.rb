@@ -8,9 +8,9 @@ class UsersControllerTest < ActionController::TestCase
 	end
 
 	test "should redirect index when not logged in" do
-        get :index
-        assert_redirected_to login_url
-    end
+		get :index
+		assert_redirected_to login_url
+	end
 
 	test "should get new" do
 		get :new
@@ -41,5 +41,24 @@ class UsersControllerTest < ActionController::TestCase
 		patch :update, id: @user, user: { name: @user.name, email: @user.email }
 		assert flash.empty?
 		assert_redirected_to root_url
-	end	 
+	end	
+
+	test "should redirect destroy when not logged in" do
+		assert_no_difference 'User.count' do
+			delete :destroy, id: @user
+		end
+		assert_redirected_to login_url
+	end
+
+	test "should redirect destroy when logged in as a non-admin" do
+		log_in_as(@other_user)
+		assert_no_difference 'User.count' do
+			delete :destroy, id: @user
+		end
+		assert_redirected_to root_url
+	end 
+end
+
+  assert_difference 'User.count', -1 do
+	delete user_path(@other_user)
 end
